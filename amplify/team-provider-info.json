@@ -1,41 +1,20 @@
 {
   "dev": {
     "awscloudformation": {
-      "AuthRoleName": "amplify-tvspoc-dev-113955-authRole",
-      "UnauthRoleArn": "arn:aws:iam::221440090697:role/amplify-tvspoc-dev-113955-unauthRole",
-      "AuthRoleArn": "arn:aws:iam::221440090697:role/amplify-tvspoc-dev-113955-authRole",
+      "AuthRoleName": "amplify-irvregistration-dev-122828-authRole",
+      "UnauthRoleArn": "arn:aws:iam::221440090697:role/amplify-irvregistration-dev-122828-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::221440090697:role/amplify-irvregistration-dev-122828-authRole",
       "Region": "eu-west-2",
-      "DeploymentBucketName": "amplify-tvspoc-dev-113955-deployment",
-      "UnauthRoleName": "amplify-tvspoc-dev-113955-unauthRole",
-      "StackName": "amplify-tvspoc-dev-113955",
-      "StackId": "arn:aws:cloudformation:eu-west-2:221440090697:stack/amplify-tvspoc-dev-113955/faf53730-a612-11ed-9fd7-0265af9d33bc",
-      "AmplifyAppId": "dvstqn2dm0npt"
+      "DeploymentBucketName": "amplify-irvregistration-dev-122828-deployment",
+      "UnauthRoleName": "amplify-irvregistration-dev-122828-unauthRole",
+      "StackName": "amplify-irvregistration-dev-122828",
+      "StackId": "arn:aws:cloudformation:eu-west-2:221440090697:stack/amplify-irvregistration-dev-122828/bebf3f10-b43e-11ed-9359-02212a251b66",
+      "AmplifyAppId": "d1bb8rzc3js0mg"
     },
     "categories": {
       "hosting": {
         "amplifyhosting": {
-          "appId": "dvstqn2dm0npt",
-          "type": "manual"
-        }
-      }
-    }
-  },
-  "prod": {
-    "awscloudformation": {
-      "AuthRoleName": "amplify-tvspoc-prod-183202-authRole",
-      "UnauthRoleArn": "arn:aws:iam::221440090697:role/amplify-tvspoc-prod-183202-unauthRole",
-      "AuthRoleArn": "arn:aws:iam::221440090697:role/amplify-tvspoc-prod-183202-authRole",
-      "Region": "eu-west-2",
-      "DeploymentBucketName": "amplify-tvspoc-prod-183202-deployment",
-      "UnauthRoleName": "amplify-tvspoc-prod-183202-unauthRole",
-      "StackName": "amplify-tvspoc-prod-183202",
-      "StackId": "arn:aws:cloudformation:eu-west-2:221440090697:stack/amplify-tvspoc-prod-183202/8d1321c0-a64c-11ed-9206-02e34c514900",
-      "AmplifyAppId": "dvstqn2dm0npt"
-    },
-    "categories": {
-      "hosting": {
-        "amplifyhosting": {
-          "appId": "dvstqn2dm0npt",
+          "appId": "d1bb8rzc3js0mg",
           "type": "manual"
         }
       }
