@@ -79,7 +79,7 @@ function App() {
             const adata = data.data
             //sort adata by date_processed attribute
             adata.sort(function(a, b) {
-              return new Date(b.date_processed) - new Date(a.date_processed);
+              return new Date(b.requested) - new Date(a.requested);
             });
             
             setArrayData(adata);
@@ -103,7 +103,7 @@ function App() {
       <Container fluid="sm" style={{ maxWidth: 600 }}>
 
         <Row className="mt-2">
-          <img src={require('./tigor_beta_logo.svg').default} alt="untied logo"/> <br />      
+          <img src={require('./asrlogo.svg').default} alt="untied logo"/> <br />      
         </Row>
 
         <Row className="mb-2">
@@ -197,18 +197,18 @@ function App() {
           <table className="table table-striped" style={{fontSize:12}}>
             <thead>
               <tr>
-                <th scope="col">ID</th>
+                {/* <th scope="col">ID</th> */}
                 <th scope="col">NINO</th>
                 <th scope="col">DoB</th>
                 <th scope="col">Email</th>
                 <th scope="col">Processed</th>
-                <th scope="col">Date</th>
+                <th scope="col">Processed Date</th>
                 </tr>
                 </thead>
                 <tbody>
                   {arrayData.map((item, index) => (
                     <tr key={index}>
-                      <th scope="row">{item.id}</th>
+                      {/* <th scope="row">{item.id}</th> */}
                       <td>{item.nino}</td>
                       <td>{item.dob}</td>
                       <td>{item.email}</td>
