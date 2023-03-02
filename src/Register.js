@@ -7,12 +7,10 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import { useState, useEffect } from 'react';
 import Card from 'react-bootstrap/Card';
+import { api_host } from './routes';
 import './App.css';
 
-const api_host = "api.untied.io";
-//const api_host = "untied1.eu.ngrok.io";
-
-function App() {
+function Register() {
 
   const [accessCode, setAccessCode] = useState('');
   const [email, setEmail] = useState('');
@@ -23,23 +21,37 @@ function App() {
 
   const saveDetails = () => {
     console.log(email, importData);
+
+    // get token from local storage
+    const token = localStorage.getItem('token');
+
     setDone(false);
     //post data to https://api.untied.io/tin-verification/save.php
     fetch(`https://${api_host}/irv-registration/save.php`, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          accessCode: accessCode,
-          email: email,
-          data: importData
-          })
-        })
-        .then(response => response.json())
-        .then(data => {
+        'Content-Type': 'application/json',
+        token: token
+      },
+      body: JSON.stringify({
+        //accessCode: accessCode,
+        email: email,
+        data: importData
+      })
+    }).then((res) => { 
+
+      if (res.status == 401) {
+        // log out
+        localStorage.removeItem('token');
+        window.location.href = '/login';
+     
+      } else {
+        res.json().then(data => {
+
+          // if response code is 401 then log out
+
           if (data.status === 'success') {
-            
+
             setAccessCode('');
             setImportData('');
             setError('');
@@ -48,13 +60,12 @@ function App() {
           } else {
             setError(data.message);
           }
-        }
-      )
-      .catch((error) => {
-        console.error('Error:', error);
+        })
 
       }
-   );
+
+    })
+   
 
   }
 
@@ -64,37 +75,36 @@ function App() {
     setDone(false);
     //post data to https://api.untied.io/tin-verification/save.php
     fetch(`https://${api_host}/irv-registration/list.php`, {
-      method: 'POST',
+      method: 'GET',
       headers: {
-        'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          accessCode: accessCode,
-          })
-        })
-        .then(response => response.json())
-        .then(data => {
-          if (data.status === 'success') {
-
-            const adata = data.data
-            //sort adata by date_processed attribute
-            adata.sort(function(a, b) {
-              return new Date(b.requested) - new Date(a.requested);
-            });
-            
-            setArrayData(adata);
-            console.log(data)
-          } else {
-            setError(data.message);
-          }
-        }
-      )
-      .catch((error) => {
-        console.error('Error:', error);
-
+        'Content-Type': 'application/json',
+        token: localStorage.getItem('token')
       }
-   );
-
+    })
+      .then(res => {
+        if (res.status == 401) {
+          // log out
+          localStorage.removeItem('token');
+          window.location.href = '/login';
+        } else {
+          res.json().then(data => {
+            if (data.status === 'success') {
+    
+              const adata = data.data
+              //sort adata by date_processed attribute
+              adata.sort(function (a, b) {
+                return new Date(b.requested) - new Date(a.requested);
+              });
+    
+              setArrayData(adata);
+              console.log(data)
+            } else {
+              setError(data.message);
+            }
+          })
+        }
+      })
+      
   }
 
   return (
@@ -103,29 +113,29 @@ function App() {
       <Container fluid="sm" style={{ maxWidth: 600 }}>
 
         <Row className="mt-2">
-          <img src={require('./asrlogo.svg').default} alt="untied logo"/> <br />      
+          <img src={require('./asrlogo.svg').default} alt="untied logo" /> <br />
         </Row>
 
         <Row className="mb-2">
 
-        {/* <h1>Agent Registration Service</h1> */}
+          {/* <h1>Agent Registration Service</h1> */}
         </Row>
 
-        <Row className="pt-4">        
+        <Row className="pt-4">
 
 
-        {done && <Card className="mt-4 mb-4" bg="success" text="light"><Card.Body><Card.Title>Thank you</Card.Title><Card.Text>Your data has been imported and will be processed in the next few minutes.</Card.Text></Card.Body></Card>}
+          {done && <Card className="mt-4 mb-4" bg="success" text="light"><Card.Body><Card.Title>Thank you</Card.Title><Card.Text>Your data has been imported and will be processed in the next few minutes.</Card.Text></Card.Body></Card>}
 
-        {error!=="" && <Card className="mt-4 mb-4" bg="danger" text="light"><Card.Body><Card.Title>Error</Card.Title><Card.Text>{error}</Card.Text></Card.Body></Card>}
+          {error !== "" && <Card className="mt-4 mb-4" bg="danger" text="light"><Card.Body><Card.Title>Error</Card.Title><Card.Text>{error}</Card.Text></Card.Body></Card>}
 
-         
+
         </Row>
 
         <Row>
 
           <Form>
 
-          <Form.Group className="mb-3" controlId="formBasicEmail">
+            {/* <Form.Group className="mb-3" controlId="formBasicEmail">
               <Form.Label>Secret access code</Form.Label>
               <Form.Control type="password" placeholder="Enter your secret access code provided by untied" value={accessCode}
                 onChange={(e) => {
@@ -133,9 +143,9 @@ function App() {
                 }}
               />
 
-            </Form.Group>
+            </Form.Group> */}
 
-{/* 
+            {/* 
             <Form.Group className="mb-3" controlId="formBasicEmail">
               <Form.Label>Your email address</Form.Label>
               <Form.Control type="email" placeholder="Enter your email" value={email}
@@ -148,9 +158,9 @@ function App() {
               </Form.Text>
             </Form.Group> */}
 
-            <hr />
-            <h3>Import</h3>
-            
+            {/* <hr /> */}
+            {/* <h3>Import</h3> */}
+
 
             <Form.Group className="mb-3" controlId="formBasicEmail">
               <Form.Label>Import client records</Form.Label>
@@ -191,10 +201,10 @@ function App() {
         {/* <Row>
           <p className="mt-2">Checks take 2 or 3 minutes. You will receive an email with the results, indicating whether the NINO and DoB match and a percentage match for the name.</p>
         </Row> */}
-        
-        {arrayData.length>0 && <Row className="mt-4">
+
+        {arrayData.length > 0 && <Row className="mt-4">
           <h3>Records</h3>
-          <table className="table table-striped" style={{fontSize:12}}>
+          <table className="table table-striped" style={{ fontSize: 12 }}>
             <thead>
               <tr>
                 {/* <th scope="col">ID</th> */}
@@ -203,23 +213,23 @@ function App() {
                 <th scope="col">Email</th>
                 <th scope="col">Processed</th>
                 <th scope="col">Processed Date</th>
+              </tr>
+            </thead>
+            <tbody>
+              {arrayData.map((item, index) => (
+                <tr key={index}>
+                  {/* <th scope="row">{item.id}</th> */}
+                  <td>{item.nino}</td>
+                  <td>{item.dob}</td>
+                  <td>{item.email}</td>
+                  <td>{item.processed}</td>
+                  <td>{item.date_processed}</td>
                 </tr>
-                </thead>
-                <tbody>
-                  {arrayData.map((item, index) => (
-                    <tr key={index}>
-                      {/* <th scope="row">{item.id}</th> */}
-                      <td>{item.nino}</td>
-                      <td>{item.dob}</td>
-                      <td>{item.email}</td>
-                      <td>{item.processed}</td>
-                      <td>{item.date_processed}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+              ))}
+            </tbody>
+          </table>
         </Row>}
-        
+
 
       </Container>
 
@@ -230,4 +240,4 @@ function App() {
   );
 }
 
-export default App;
+export default Register;
