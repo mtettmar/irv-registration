@@ -10,8 +10,9 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import Register from './Register';
 import Login from './Login'
 import Dashboard from "./Dashboard";
+import Settings from "./Settings";
 
-//export const api_host = "untied2.eu.ngrok.io";
+//export const api_host = "untied1.eu.ngrok.io";
 export const api_host = "api.untied.io";
 
 // This site has 3 pages, all of which are rendered
@@ -26,14 +27,11 @@ export const api_host = "api.untied.io";
 export default function BasicExample() {
 
     // get current path
-    const path = window.location.pathname;
-    console.log(path);
+    const path = window.location.pathname;  
 
     // are we logged in (do we have a token in localstorage)
     const token = localStorage.getItem('token');
-    console.log(token);
-
-
+    
     return (
         <Router>
             <div>
@@ -45,10 +43,15 @@ export default function BasicExample() {
                                 <Link to="/">Home</Link>
                             </li>
                             <li className="nav-item mx-2">
-                                <Link to="/register">Register client</Link>
+                                <Link to="/register">Register clients</Link>
                             </li>
 
                             <li className="nav-item" style={{marginLeft:'auto', marginRight:10}}>
+                            <Link to="/settings">Settings</Link>
+                            </li>
+
+
+                            <li className="nav-item ms-2" style={{marginRight:10}}>
                                 <span onClick={() => {
                                     localStorage.removeItem('token');
                                     window.location.href = '/login';
@@ -82,6 +85,7 @@ export default function BasicExample() {
                     <Route path="/dash" element={<Dashboard />} />
                     <Route path="/register" element={<Register />} />
                     <Route path="/login" element={<Login />} />
+                    <Route path="/settings" element={<Settings />} />
                     </>
             )}
             {!token && (

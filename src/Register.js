@@ -8,16 +8,20 @@ import Col from 'react-bootstrap/Col';
 import { useState, useEffect } from 'react';
 import Card from 'react-bootstrap/Card';
 import { api_host } from './routes';
+import Modal from 'react-bootstrap/Modal';
 import './App.css';
 
 function Register() {
 
   const [accessCode, setAccessCode] = useState('');
-  const [email, setEmail] = useState('');
+  const [email, setEmail] = useState(localStorage.getItem('email'));
+  const [batchRef, setBatchRef] = useState('');
   const [importData, setImportData] = useState('');
   const [arrayData, setArrayData] = useState([]);
   const [done, setDone] = useState(false);
   const [error, setError] = useState("");
+  const [inviteUrl, setInviteUrl] = useState("");
+  const [showInvite, setShowInvite] = useState(false);
 
   const saveDetails = () => {
     console.log(email, importData);
@@ -36,6 +40,7 @@ function Register() {
       body: JSON.stringify({
         //accessCode: accessCode,
         email: email,
+        batch_ref: batchRef,
         data: importData
       })
     }).then((res) => { 
@@ -49,6 +54,7 @@ function Register() {
         res.json().then(data => {
 
           // if response code is 401 then log out
+          console.log(data)
 
           if (data.status === 'success') {
 
@@ -72,7 +78,6 @@ function Register() {
 
   const getRecords = () => {
     console.log(email, importData);
-    setDone(false);
     //post data to https://api.untied.io/tin-verification/save.php
     fetch(`https://${api_host}/irv-registration/list.php`, {
       method: 'GET',
@@ -109,6 +114,25 @@ function Register() {
 
   return (
     <div className="App">
+
+      <Modal show={showInvite} onHide={() => { setShowInvite(false) }}>
+        <Modal.Header closeButton>
+          <Modal.Title>Invite link</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <p>Copy and share this link with your client</p>
+
+          <p>{inviteUrl}</p>
+
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => { setShowInvite(false) }}>
+            Close
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
+
 
       <Container fluid="sm" style={{ maxWidth: 600 }}>
 
@@ -161,14 +185,63 @@ function Register() {
             {/* <hr /> */}
             {/* <h3>Import</h3> */}
 
+            {/* add a file upload button here and put the contents in the textarea below */}
+              
+
+            <Form.Group className="mb-3" controlId="formBasicEmail">
+              <Form.Label>Upload CSV file or paste below</Form.Label>
+              <Form.Control type="file" placeholder="Upload CSV file" 
+                onChange={(e) => {
+                  // get content of imported file
+                  const file = e.target.files[0];
+                  const reader = new FileReader();
+                  reader.readAsText(file);
+                  reader.onload = () => {
+                    const text = (reader.result);
+                    setImportData(text);
+                  }
+                }}
+              />
+            </Form.Group>
+
+
 
             <Form.Group className="mb-3" controlId="formBasicEmail">
               <Form.Label>Import client records</Form.Label>
-              <Form.Control as="textarea" rows={6} type="text" placeholder="NX112233A,1980-11-15,CLIENT@EMAIL.XYZ" value={importData}
+              <Form.Control as="textarea" rows={6} type="text" placeholder="NX112233A,1980-11-15,CLIENT@EMAIL.XYZ,OPTIONAL_REFERENCE" value={importData}
                 onChange={(e) => {
                   setImportData(e.target.value);
                 }}
               />
+            </Form.Group>
+
+            <p>
+              Import format: NINO,DOB,EMAIL,OPTIONAL_REFERENCE. 
+            </p>
+            <p>
+              If using Excel all columns should be formatted as text and DoB should be in YYYY-MM-DD format. Format the column before entering the date to prevent Excel from reformatting it. Then save as CSV. <a href="/star_import_template.xlsx">Download a pre-formatted template with instructions</a>.
+            </p>
+
+            <Form.Group className="mb-3" controlId="formBasicEmail">
+              <Form.Label>Email address to send results to</Form.Label>
+              <Form.Control type="email" placeholder="Enter your email" value={email}
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                }}
+              />
+              <Form.Text className="text-muted">
+                This is where we will send the results of the import. 
+              </Form.Text>
+            </Form.Group>
+
+            <Form.Group className="mb-3" controlId="formBasicEmail">
+              <Form.Label>Batch reference (optional)</Form.Label>
+              <Form.Control type="text" placeholder="Batch reference" value={batchRef}
+                onChange={(e) => {
+                  setBatchRef(e.target.value);
+                }}
+              />
+
             </Form.Group>
 
             <p>
@@ -198,12 +271,15 @@ function Register() {
 
         </Row>
 
+        </Container>
+        <Container fluid="sm" style={{ width:'90%' }}>
+
         {/* <Row>
           <p className="mt-2">Checks take 2 or 3 minutes. You will receive an email with the results, indicating whether the NINO and DoB match and a percentage match for the name.</p>
         </Row> */}
 
         {arrayData.length > 0 && <Row className="mt-4">
-          <h3>Records</h3>
+          <h3>Invitations</h3>
           <table className="table table-striped" style={{ fontSize: 12 }}>
             <thead>
               <tr>
@@ -213,17 +289,26 @@ function Register() {
                 <th scope="col">Email</th>
                 <th scope="col">Processed</th>
                 <th scope="col">Processed Date</th>
+                <th scope="col">Reference</th>
+                <th scope="col">Batch</th>
               </tr>
             </thead>
             <tbody>
               {arrayData.map((item, index) => (
-                <tr key={index}>
+                <tr key={index} onClick={() => {
+                  if (item.invite_url) {
+                    setInviteUrl(item.invite_url);
+                    setShowInvite(true);
+                  }
+                }} role='button'>
                   {/* <th scope="row">{item.id}</th> */}
                   <td>{item.nino}</td>
                   <td>{item.dob}</td>
                   <td>{item.email}</td>
-                  <td>{item.processed}</td>
+                  <td>{item.processed=='Y'?'Yes':'No'}</td>
                   <td>{item.date_processed}</td>
+                  <td>{item.custom_ref}</td>
+                  <td>{item.batch_ref}</td>
                 </tr>
               ))}
             </tbody>

@@ -35,11 +35,13 @@ export default function Login() {
                     const token = data.token;
                     //store token in local storage
                     localStorage.setItem('token', token);
+                    localStorage.setItem('email', email);
                     // navigate to /dashboard
                     window.location.href = '/dash';
 
                 } else {
                     console.log(data);
+                    alert('Login failed - please try again!')
                 }
             })
     }
