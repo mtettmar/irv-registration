@@ -22,6 +22,7 @@ function Register() {
   const [error, setError] = useState("");
   const [inviteUrl, setInviteUrl] = useState("");
   const [showInvite, setShowInvite] = useState(false);
+  const [sendInviteEmails, setSendInviteEmails] = useState(false);
 
   const saveDetails = () => {
     console.log(email, importData);
@@ -41,7 +42,8 @@ function Register() {
         //accessCode: accessCode,
         email: email,
         batch_ref: batchRef,
-        data: importData
+        data: importData,
+        send_invite_emails: sendInviteEmails ? "Y" : "N"
       })
     }).then((res) => { 
 
@@ -222,7 +224,16 @@ function Register() {
               If using Excel all columns should be formatted as text and DoB should be in YYYY-MM-DD format. Format the column before entering the date to prevent Excel from reformatting it. Then save as CSV. <a href="/star_import_template.xlsx">Download a pre-formatted template with instructions</a>.
             </p>
 
-            <Form.Group className="mb-3" controlId="formBasicEmail">
+
+            <Form.Group className="mt-4">
+                <Form.Check type="checkbox" label={<p>Send invite emails to customers - make sure email template etc is set up in <a href="/settings" >settings</a></p>} checked={sendInviteEmails}
+
+                    onChange={(e) => { setSendInviteEmails(e.target.checked) }}
+                />
+            </Form.Group>
+
+
+            <Form.Group className="mb-3 mt-4" controlId="formBasicEmail">
               <Form.Label>Email address to send results to</Form.Label>
               <Form.Control type="email" placeholder="Enter your email" value={email}
                 onChange={(e) => {
@@ -314,6 +325,8 @@ function Register() {
             </tbody>
           </table>
         </Row>}
+
+        <div style={{height:100}} />
 
 
       </Container>
